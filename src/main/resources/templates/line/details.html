@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理线路</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script>
+        function postLine() {
+            var id=document.getElementById("insId").value;
+            var name=document.getElementById("insName").value;
+            var dir=document.getElementById("insDir").value;
+            var no=document.getElementById("insNo").value;
+            if(name.length===0){
+                alert('车辆名为空！');
+                document.getElementById('insName').focus();
+                return false;
+            }else {
+                $.ajax({
+                    type:"POST",
+                    url:"http://127.0.0.1:8081/line/details/ins",
+                    data:{"busID" : id,"sta_Name" : name,"direction" : dir,"sta_No" : no},
+                    dataType:"text",
+                    success:function(data) {
+                        alert(data);
+                        if (data==="success") {
+                            window.location.reload();
+                        }
+                    },
+                    error:function(data) {
+                        alert("Msg:"+data);
+                    }
+                })
+            }
+        }
+        function deleteLine() {
+            var id=document.getElementById("delId").value;
+            var no=document.getElementById("delNo").value;
+            var dir=document.getElementById("delDir").value;
+            if(no==="0"){
+                alert('无数据');
+                window.location.reload();
+                return false;
+            }else {
+                $.ajax({
+                    type:"DELETE",
+                    url:"http://127.0.0.1:8081/line/details/del",
+                    data:{"busID" : id,"staNo" : no,"direction" : dir},
+                    dataType:"text",
+                    success:function(data) {
+                        alert(data);
+                        if (data==="success") {
+                            window.location.reload();
+                        }
+                    },
+                    error:function(data) {
+                        alert("Msg:"+data);
+                    }
+                })
+            }
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/}">欢迎页面</a>
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/index}" >首页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/logout}" >注销登录</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid" style="margin-top: 80px">
+    <div class="row">
+        <div class="col-sm-2">
+            <a th:href="@{/user/list}" class="list-group-item">用户管理</a>
+            <a th:href="@{/bus/list}" class="list-group-item">车辆管理</a>
+            <a th:href="@{/station/list}" class="list-group-item">站点管理</a>
+            <a th:href="@{/line/list}" class="list-group-item active">线路管理</a>
+            <a th:href="@{/admin/list}" class="list-group-item">管理员</a>
+        </div>
+        <!--左边菜单栏-->
+        <div class="col-sm-10">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">主页</li>
+                <li class="breadcrumb-item">线路信息</li>
+                <li class="breadcrumb-item active">详细</li>
+            </ol>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                    <legend>
+                        <strong th:text="${busMsg.getBusName()}+'，'+${dir}+'方向'"></strong>
+                    </legend>
+                    <thead>
+                    <tr>
+                        <th>站点ID</th>
+                        <th>站点名</th>
+                        <th>站点序号</th>
+                        <th>
+                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delModal">删除</button>
+                            <div class="modal fade" id="delModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">警告</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>确定删除吗？</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!--<input type="hidden" name="_method" value="delete">-->
+                                            <input type="hidden" id="delId" th:value="${busMsg.getBudID()}">
+                                            <input type="hidden" id="delNo" th:value="${busStations.size()}">
+                                            <input type="hidden" id="delDir" th:value="${dir}">
+                                            <button class="btn btn-primary"  onclick="deleteLine()">确定</button>
+                                            <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="btn btn-sm btn-secondary" th:href="@{/line/list}">返回</a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="busStation:${busStations}">
+                        <td th:text="${busStation.getStationID()}"></td>
+                        <td th:text="${busStation.getSta_Name()}"></td>
+                        <td th:text="${busStation.getSta_No()}"></td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                    <thead>
+                    <tr>
+                        <th>
+                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal">添加</button>
+                            <div class="modal fade" id="myModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">编辑</h4>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <label for="insId">车辆ID</label>
+                                            <input type="text" id="insId" readonly="readonly" th:value="${busMsg.getBudID()}" class="form-control" />
+                                            <br>
+                                            <label for="insName">站点名</label>
+                                            <input type="text" id="insName" class="form-control" />
+                                            <br>
+                                            <label for="insDir">方向</label>
+                                            <input type="text" id="insDir" readonly="readonly" th:value="${dir}" class="form-control" />
+                                            <br>
+                                            <label for="insNo">站点序号</label>
+                                            <input type="text" id="insNo" readonly="readonly" th:value="${busStations.size()+1}" class="form-control" />
+                                            <br>
+                                            <button class="btn btn-primary" onclick="postLine()">确定</button>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>

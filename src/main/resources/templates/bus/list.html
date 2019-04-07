@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理车辆</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script type="text/javascript">
+        function postBus(){
+            var name=document.getElementById("insName");
+            var city=document.getElementById("insCity");
+            var price=document.getElementById("insPrice");
+            var start=document.getElementById("insStart");
+            var end=document.getElementById("insEnd");
+            var reg = /^(20|21|22|23|[0-1]\d):[0-5]\d:[0-5]\d$/;
+            var regExp = new RegExp(reg);
+            if(name.value.length===0){
+                alert('车辆名为空！');
+                name.focus();
+                return false;
+            } else if(city.value.length===0){
+                alert('城市名为空！');
+                city.focus();
+                return false;
+            }else if(price.value.length===0){
+                alert('价格为空！');
+                price.focus();
+                return false;
+            }else if (!regExp.test($("input[id='insStart']").val())){
+                alert("首班车时间格式不正确，正确格式为：12:00:00");
+                return false;
+            }else if(!regExp.test($("input[id='insEnd']").val())){
+                alert("末班车时间格式不正确，正确格式为：12:00:00");
+                return false;
+            } else {
+                $.ajax({
+                    type:"POST",
+                    url:"http://127.0.0.1:8081/bus",
+                    data:{"busName" : name.value,"busCity" : city.value,"busPrice" : price.value,"busStart" : start.value,"busEnd" : end.value},
+                    dataType:"text",
+                    success:function(data) {
+                        alert(data);
+                        if (data==="success") {
+                            window.location.reload();
+                        }
+                    },
+                    error:function(data) {
+                        alert("Msg:"+data);
+                    }
+                })
+            }
+        }
+        function deleteBus() {
+            return confirm("确认删除吗?");
+        }
+
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/}">欢迎页面</a>
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/index}" >首页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/logout}" >注销登录</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid" style="margin-top: 80px">
+    <div class="row">
+        <div class="col-sm-2">
+            <a th:href="@{/user/list}" class="list-group-item">用户管理</a>
+            <a th:href="@{/bus/list}" class="list-group-item active">车辆管理</a>
+            <a th:href="@{/station/list}" class="list-group-item">站点管理</a>
+            <a th:href="@{/line/list}" class="list-group-item">线路管理</a>
+            <a th:href="@{/admin/list}" class="list-group-item">管理员</a>
+        </div>
+        <!--左边菜单栏-->
+        <div class="col-sm-10">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">主页</li>
+                <li class="breadcrumb-item active">车辆信息</li>
+            </ol>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                    <legend>
+                        <strong>车辆列表</strong>
+                    </legend>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>车辆ID</th>
+                        <th>车名</th>
+                        <th>城市名</th>
+                        <th>票价</th>
+                        <th>首班车</th>
+                        <th>末班车</th>
+                        <th>
+                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal">添加</button>
+                            <div class="modal fade" id="myModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">车辆添加</h4>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="row">
+                                                <div class="col-lg-6 form-group">
+                                                    <label for="insName">车辆名</label>
+                                                    <input type="text" id="insName"  class="form-control" />
+                                                </div>
+                                                <div class="col-lg-6 form-group">
+                                                    <label for="insCity">城市名</label>
+                                                    <input type="text" id="insCity" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6 form-group">
+                                                    <label for="insPrice">价格</label>
+                                                    <input oninput="this.value = this.value.replace(/[^\d]/g, '').replace(/^0+/g,'');"
+                                                           id="insPrice" class="form-control" />
+                                                </div>
+                                                <div class="col-lg-6 form-group">
+                                                    <label for="insStart">首班车</label>
+                                                    <input type="text" id="insStart" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6 form-group">
+                                                    <label for="insEnd">末班车</label>
+                                                    <input type="text" id="insEnd" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary"  onclick="postBus()">确定</button>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="bus,busStat:${buses}">
+                        <td th:text="${busStat.count}"></td>
+                        <td th:text="${bus.getBudID()}"></td>
+                        <td th:text="${bus.getBusName()}"></td>
+                        <td th:text="${bus.getBusCity()}"></td>
+                        <td th:text="${bus.getBusPrice()}"></td>
+                        <td th:text="${bus.getBusStart()}"></td>
+                        <td th:text="${bus.getBusEnd()}"></td>
+                        <td>
+                            <form th:action="@{/bus/del}" method="post" onsubmit="return deleteBus()">
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="hidden" name="busID" th:value="${bus.getBudID()}">
+                                <button class="btn btn-sm btn-danger" type="submit">删除</button>
+                            </form>
+
+                            <form th:action="@{/bus/{busID}(busID=${bus.getBudID()})}" method="post">
+                                <button  class="btn btn-sm btn-primary" id="submit" type="submit">修改</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="1"><p th:text="'第' + ${page.pageNum} + '页'"></p></td>
+                        <td><a th:href="@{/bus/list(page=1)}">首页</a></td>
+                        <td><a th:href="@{/bus/list(page=${page.nextPage})}">下一页</a></td>
+                        <td><a th:href="@{/bus/list(page=${page.prePage})}">上一页</a></td>
+                        <td><a th:href="@{/bus/list(page=${page.lastPage})}">末页</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

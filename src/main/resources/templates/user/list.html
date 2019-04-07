@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title>管理用户</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script>
+        function delChk() {
+            return confirm("确认删除吗?")
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <a class="navbar-brand" th:href="@{/}">欢迎页面</a>
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/index}" >首页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/logout}" >注销登录</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid" style="margin-top: 80px">
+    <!--<h5><strong>用户信息管理系统<br/></strong></h5>-->
+    <div class="row">
+        <div class="col-sm-2">
+            <a th:href="@{/user/list}" class="list-group-item active">用户管理</a>
+            <a th:href="@{/bus/list}" class="list-group-item">车辆管理</a>
+            <a th:href="@{/station/list}" class="list-group-item">站点管理</a>
+            <a th:href="@{/line/list}" class="list-group-item">线路管理</a>
+            <a th:href="@{/admin/list}" class="list-group-item">管理员</a>
+        </div>
+
+        <div class="col-sm-10">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">主页</li>
+                <li class="breadcrumb-item active">用户信息</li>
+            </ol>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                    <legend>
+                        <strong>用户列表</strong>
+                    </legend>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>用户ID</th>
+                        <th>用户邮箱</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user,userStat:${users}">
+                        <td th:text="${userStat.count}"></td>
+                        <td th:text="${user.getUserID()}"></td>
+                        <td th:text="${user.getUserName()}"></td>
+                        <td>
+
+                            <form th:action="@{/user/{userID}(userID=${user.getUserID()})}" method="post" onsubmit="return delChk()">
+                                <input type="hidden" name="_method" value="delete">
+                                <button class="btn btn-sm btn-danger">Del</button>
+                            </form>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="1"><p th:text="'第' + ${page.pageNum} + '页'"></p></td>
+                        <td><a th:href="@{/user/list(page=1)}">首页</a></td>
+                        <td><a th:href="@{/user/list(page=${page.nextPage})}">下一页</a></td>
+                        <td><a th:href="@{/user/list(page=${page.prePage})}">上一页</a></td>
+                        <td><a th:href="@{/user/list(page=${page.lastPage})}">末页</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
