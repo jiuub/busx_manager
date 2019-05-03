@@ -152,13 +152,16 @@
                         <td th:text="${station.getSta_Lng()}"></td>
                         <td th:text="${station.getSta_Lat()}"></td>
                         <td>
+                            <form th:action="@{/station/{stationID}(stationID=${station.getStationID()})}" method="post">
+                                <button  class="btn btn-sm btn-secondary"  type="submit" >修改</button>
+                            </form>
+                        </td>
+                        <td>
                             <form th:action="@{/station/{id}(id=${station.getStationID()})}" method="post" onsubmit="return delCheck()">
                                 <input type="hidden" name="_method" value="delete">
                                 <button class="btn btn-sm btn-danger">删除</button>
                             </form>
-                            <form th:action="@{/station/{stationID}(stationID=${station.getStationID()})}" method="post">
-                                <button  class="btn btn-sm btn-primary"  type="submit" >修改</button>
-                            </form>
+                        </td>
                     </tr>
 
                     <tr>

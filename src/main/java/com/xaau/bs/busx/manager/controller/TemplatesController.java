@@ -31,8 +31,15 @@ public class TemplatesController {
                       @RequestParam(value = "logout",required = false) String logout,
                       Model model){
     if (error!=null){
-      model.addAttribute("errorMsg","登录失败");
-    }else if (logout!=null){
+      if ("user".equals(error)){
+        model.addAttribute("errorMsg","登录信息有误");
+      }else if ("code".equals(error)){
+        model.addAttribute("errorMsg","验证码有误");
+      }else {
+        model.addAttribute("errorMsg","信息有误");
+      }
+    }
+    if (logout!=null){
       model.addAttribute("logoutMsg","退出成功");
     }
     return "login";

@@ -160,14 +160,15 @@
                         <td th:text="${bus.getBusStart()}"></td>
                         <td th:text="${bus.getBusEnd()}"></td>
                         <td>
+                            <form th:action="@{/bus/{busID}(busID=${bus.getBudID()})}" method="post">
+                                <button  class="btn btn-sm btn-secondary" id="submit" type="submit">修改</button>
+                            </form>
+                        </td>
+                        <td>
                             <form th:action="@{/bus/del}" method="post" onsubmit="return deleteBus()">
                                 <input type="hidden" name="_method" value="delete">
                                 <input type="hidden" name="busID" th:value="${bus.getBudID()}">
                                 <button class="btn btn-sm btn-danger" type="submit">删除</button>
-                            </form>
-
-                            <form th:action="@{/bus/{busID}(busID=${bus.getBudID()})}" method="post">
-                                <button  class="btn btn-sm btn-primary" id="submit" type="submit">修改</button>
                             </form>
                         </td>
                     </tr>
